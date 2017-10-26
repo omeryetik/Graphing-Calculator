@@ -20,7 +20,7 @@ var numberFormatter: NumberFormatter {
     return formatter
 }   //
 
-class CalculatorViewController: UIViewController {
+class CalculatorViewController: UIViewController, GraphViewDataSource {
     
     @IBOutlet weak var display: UILabel!
     @IBOutlet weak var history: UILabel!
@@ -161,6 +161,37 @@ class CalculatorViewController: UIViewController {
         }
     }   //
     
+    // MARK: GraphViewDataSource Protocol Methods
+    func yValue(for xValue: Double) -> Double {
+        let evaluationResult = brain.evaluate(using: ["M" : xValue])
+        return evaluationResult.result ?? 0.0
+    }
+    
+    var titleForGraph: String {
+        return brain.evaluate(using: variables).description
+    }
+    
+    // MARK: Navigation
+    
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        if identifier == "graph" {
+            let evaluationResult = brain.evaluate(using: variables)
+            return !evaluationResult.isPending
+        }
+        return true
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        var destinationViewController = segue.destination
+        if let navigationController = destinationViewController as? UINavigationController {
+            destinationViewController = navigationController.visibleViewController ?? destinationViewController
+        }
+        if let graphViewController = destinationViewController as? GraphViewController {
+            graphViewController.dataSource = self
+        }
+    }
     
 }
+
+
 

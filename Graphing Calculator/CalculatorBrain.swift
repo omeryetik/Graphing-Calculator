@@ -83,7 +83,7 @@ struct CalculatorBrain {
         "x³"    : Operation.unaryOperation({ pow($0, 3) }, { "(" + $0 + ")³" }, nil),
         "cos"   : Operation.unaryOperation(cos, { "cos(" + $0 + ")" }, nil),
         "sin"   : Operation.unaryOperation(sin, { "sin(" + $0 + ")" }, nil),
-        "tan"   : Operation.unaryOperation(tan, { "tan(" + $0 + ")⁻¹" }, nil),
+        "tan"   : Operation.unaryOperation(tan, { "tan(" + $0 + ")" }, nil),
         "log₁₀" : Operation.unaryOperation(log10, { "log₁₀(" + $0 + ")" }, { $0 <= 0 ? "Logarithm operand should be > 0 !" : nil }),
         "eˣ"    : Operation.unaryOperation({ pow(M_E, $0) }, { "e^(" + $0 + ")" }, nil),
         "±"     : Operation.unaryOperation({ -$0 }, { "±(" + $0 + ") " }, nil),
