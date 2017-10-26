@@ -71,18 +71,12 @@ class GraphView: UIView {
         let yInGraphCoordinates: CGFloat
         // value assigned using the if let construct below to avoid crashing in live view on Storyboard
         if let doubleYValue = dataSource?.yValue(for: Double(xInGraphCoordinates)) {
-            if doubleYValue.isNaN || doubleYValue.isInfinite {
-                print("nextPoint.y value is either infinite or NaN")
-            }
             yInGraphCoordinates = CGFloat(doubleYValue)
         } else {
             yInGraphCoordinates = 0.0
         }
         let yInViewCoordinates = origin.y - (yInGraphCoordinates * scale)
         
-//        print("xInGraph : \(xInGraphCoordinates)   yInGraph : \(yInGraphCoordinates)")
-//        print("xInView : \(xInViewCoordinates)   yInView : \(yInViewCoordinates)")
-
         return (CGPoint(x: xInViewCoordinates, y: yInViewCoordinates),
                 CGPoint(x: xInGraphCoordinates, y: yInGraphCoordinates))
     }
@@ -126,25 +120,6 @@ class GraphView: UIView {
             // If discontinuity occurs move to the next point without drawing a line.
             // Otherwise draw the line.
             if discontinuity || pointIsNotVisible {
-                if discontinuity {
-                    print("------ Discontinuity ------")
-                    //                print("---------------------------")
-                    print(" -- Last Point : ")
-                    print("xInGraph : \(lastPoint.inGraphCoordinates.x)   yInGraph : \(lastPoint.inGraphCoordinates.y)")
-                    //                print("xInView : \(lastPoint.inViewCoordinates.x)   yInView : \(lastPoint.inViewCoordinates.y)")
-                    print(" -- Next Point : ")
-                    print("xInGraph : \(nextPoint.inGraphCoordinates.x)   yInGraph : \(nextPoint.inGraphCoordinates.y)")
-                    //                print("xInView : \(nextPoint.inViewCoordinates.x)   yInView : \(nextPoint.inViewCoordinates.y)")
-                    print("---------------------------")
-                    print(" ")
-                }
-                if pointIsNotVisible {
-                    print("------ Point is not Visible ------")
-                    print("xInView : \(nextPoint.inViewCoordinates.x)   yInView : \(nextPoint.inViewCoordinates.y)")
-                    print("Rect : \(rect)")
-                    print("---------------------------")
-                    print(" ")
-                }
                 graph.move(to: nextPoint.inViewCoordinates)
             } else {
                 graph.addLine(to: nextPoint.inViewCoordinates)
