@@ -8,11 +8,16 @@
 
 import UIKit
 
-class GraphViewController: UIViewController {
+class GraphViewController: VCLLoggingViewController {
 
     // Public API
     
-    var dataSource: GraphViewDataSource?
+    // This is the model for Graphing MVC. It is simply an x-y function
+    var functionToGraph: ((Double) -> Double)? {
+        didSet {
+            updateUI()
+        }
+    }
     
     @IBOutlet weak var graphView: GraphView! {
         didSet {
@@ -25,20 +30,31 @@ class GraphViewController: UIViewController {
             let doubleTapRecognizer = UITapGestureRecognizer(target: graphView, action: panOrTapRecognizer)
             doubleTapRecognizer.numberOfTapsRequired = 2
             graphView.addGestureRecognizer(doubleTapRecognizer)
-            graphView.dataSource = self.dataSource
+            updateUI()
         }
     }
 
+    // Updating the UI corresponds to setting the function to be drawn
+    private func updateUI() {
+        if functionToGraph == nil {
+            // If functionToGraph is nil, it means either it is not set, or is set to nil
+            // In such a case look if there is any stored function from the last session
+            // and set the function to the stored one if available
+        } else {
+            graphView?.functionToGraph = functionToGraph
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        self.navigationItem.title = dataSource?.titleForGraph
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()

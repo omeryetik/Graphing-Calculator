@@ -20,11 +20,12 @@ var numberFormatter: NumberFormatter {
     return formatter
 }   //
 
-class CalculatorViewController: UIViewController, GraphViewDataSource {
+class CalculatorViewController: VCLLoggingViewController {
     
     @IBOutlet weak var display: UILabel!
     @IBOutlet weak var history: UILabel!
     @IBOutlet weak var memory: UILabel!
+    @IBOutlet weak var graphButton: UIButton!
     
     var userIsInTheMiddleOfTyping = false
     var userDidUndoLastOperation = false
@@ -103,8 +104,13 @@ class CalculatorViewController: UIViewController, GraphViewDataSource {
         //  Reset the undo operation tracking variable in case it was set to true.
         //  Meaningful only if the update method was called due to an undo operation.
         userDidUndoLastOperation = false
+        
+        if evaluationResult.isPending || evaluationResult.result == nil {
+            canGraph = false
+        } else {
+            canGraph = true
+        }
     }
-    
     
     //  Corrsponds to →M button
     @IBAction func setVariable() {
@@ -136,6 +142,7 @@ class CalculatorViewController: UIViewController, GraphViewDataSource {
         history.text = " "
         memory.text = " "
         userIsInTheMiddleOfTyping = false
+        canGraph = false
     }   //
     
     //  A1ECT1
@@ -170,13 +177,23 @@ class CalculatorViewController: UIViewController, GraphViewDataSource {
     var titleForGraph: String {
         return brain.evaluate(using: variables).description
     }
+
+    // MARK: Graph function related variables
+    
+    // A3ECT1: If current operation cannot be graphed, decrease alpha of the graph button.
+    var canGraph: Bool = false {
+        willSet {
+            if newValue != canGraph {
+                graphButton.alpha = newValue == true ? 1.0 : 0.3
+            }
+        }
+    }
+    //
     
     // MARK: Navigation
-    
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
         if identifier == "graph" {
-            let evaluationResult = brain.evaluate(using: variables)
-            return !evaluationResult.isPending
+            return canGraph
         }
         return true
     }
@@ -187,7 +204,11 @@ class CalculatorViewController: UIViewController, GraphViewDataSource {
             destinationViewController = navigationController.visibleViewController ?? destinationViewController
         }
         if let graphViewController = destinationViewController as? GraphViewController {
-            graphViewController.dataSource = self
+            graphViewController.functionToGraph = {[weak weakSelf = self] in
+                variables["M"] = $0
+                let y = weakSelf?.brain.evaluate(using: variables).result
+                return y!
+            }
         }
     }
     

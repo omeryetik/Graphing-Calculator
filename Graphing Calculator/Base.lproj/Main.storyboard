@@ -65,7 +65,7 @@
                                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="mhd-wm-0vr">
                                                 <rect key="frame" x="0.0" y="0.0" width="374" height="81.333333333333343"/>
                                                 <subviews>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8As-K6-QOH">
+                                                    <button opaque="NO" alpha="0.29999999999999999" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8As-K6-QOH">
                                                         <rect key="frame" x="0.0" y="0.0" width="72.333333333333329" height="81.333333333333343"/>
                                                         <color key="backgroundColor" red="0.80000001190000003" green="0.80000001190000003" blue="0.80000001190000003" alpha="1" colorSpace="calibratedRGB"/>
                                                         <fontDescription key="fontDescription" type="system" weight="light" pointSize="20"/>
@@ -498,6 +498,7 @@
                     <navigationItem key="navigationItem" title="Calculator" id="DVs-TF-Jjj"/>
                     <connections>
                         <outlet property="display" destination="bY6-DL-hfL" id="MgR-ZF-Rjj"/>
+                        <outlet property="graphButton" destination="8As-K6-QOH" id="uPe-Li-nB0"/>
                         <outlet property="history" destination="Rdt-Nr-Pmx" id="fZC-m6-G4W"/>
                         <outlet property="memory" destination="s1p-ob-VXS" id="cb0-zR-FeG"/>
                     </connections>

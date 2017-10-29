@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		101534D11FA65F6600BF9F91 /* VCLLoggingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 101534D01FA65F6600BF9F91 /* VCLLoggingViewController.swift */; };
 		102045F51F993A0600865EAC /* AxesDrawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102045F01F993A0600865EAC /* AxesDrawer.swift */; };
 		102045F71F993A0600865EAC /* GraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102045F21F993A0600865EAC /* GraphView.swift */; };
 		102045F81F993A0600865EAC /* GraphViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102045F31F993A0600865EAC /* GraphViewController.swift */; };
-		102045F91F993A0600865EAC /* GraphViewDataSourceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102045F41F993A0600865EAC /* GraphViewDataSourceProtocol.swift */; };
 		10A1D15E1F93FC7B00A02F2F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10A1D15D1F93FC7B00A02F2F /* AppDelegate.swift */; };
 		10A1D1601F93FC7B00A02F2F /* CalculatorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10A1D15F1F93FC7B00A02F2F /* CalculatorViewController.swift */; };
 		10A1D1631F93FC7B00A02F2F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 10A1D1611F93FC7B00A02F2F /* Main.storyboard */; };
@@ -20,10 +20,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		101534D01FA65F6600BF9F91 /* VCLLoggingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VCLLoggingViewController.swift; sourceTree = "<group>"; };
 		102045F01F993A0600865EAC /* AxesDrawer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AxesDrawer.swift; sourceTree = "<group>"; };
 		102045F21F993A0600865EAC /* GraphView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphView.swift; sourceTree = "<group>"; };
 		102045F31F993A0600865EAC /* GraphViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphViewController.swift; sourceTree = "<group>"; };
-		102045F41F993A0600865EAC /* GraphViewDataSourceProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphViewDataSourceProtocol.swift; sourceTree = "<group>"; };
 		10A1D15A1F93FC7B00A02F2F /* Graphing Calculator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Graphing Calculator.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		10A1D15D1F93FC7B00A02F2F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		10A1D15F1F93FC7B00A02F2F /* CalculatorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculatorViewController.swift; sourceTree = "<group>"; };
@@ -78,7 +78,7 @@
 		10A1D1711F93FF0100A02F2F /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				102045F41F993A0600865EAC /* GraphViewDataSourceProtocol.swift */,
+				101534D01FA65F6600BF9F91 /* VCLLoggingViewController.swift */,
 				10A1D15D1F93FC7B00A02F2F /* AppDelegate.swift */,
 				10A1D1641F93FC7B00A02F2F /* Assets.xcassets */,
 				10A1D1661F93FC7B00A02F2F /* LaunchScreen.storyboard */,
@@ -160,9 +160,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				101534D11FA65F6600BF9F91 /* VCLLoggingViewController.swift in Sources */,
 				10A1D1701F93FD0D00A02F2F /* CalculatorBrain.swift in Sources */,
 				102045F51F993A0600865EAC /* AxesDrawer.swift in Sources */,
-				102045F91F993A0600865EAC /* GraphViewDataSourceProtocol.swift in Sources */,
 				102045F81F993A0600865EAC /* GraphViewController.swift in Sources */,
 				10A1D1601F93FC7B00A02F2F /* CalculatorViewController.swift in Sources */,
 				10A1D15E1F93FC7B00A02F2F /* AppDelegate.swift in Sources */,

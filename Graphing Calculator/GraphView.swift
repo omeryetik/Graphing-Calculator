@@ -11,21 +11,24 @@ import UIKit
 @IBDesignable
 class GraphView: UIView {
 
+    // Public API
+    
+    // Function that the GraphView draws
+    var functionToGraph: ((Double) -> Double)? { didSet { setNeedsDisplay() } }
+    
     // scale identifies points per unit in the view
     @IBInspectable
     var scale: CGFloat = 50 { didSet { setNeedsDisplay() } }
     
     // origin for graph
     @IBInspectable
-    var origin: CGPoint = CGPoint(x: 0.0, y: 0.0) { didSet { setNeedsDisplay() } }
+    var origin: CGPoint = CGPoint.zero { didSet { setNeedsDisplay() } }
     
     @IBInspectable
     var lineWidth: CGFloat = 2.0 { didSet { setNeedsDisplay() } }
     
     var maxAllowedSwingScale: CGFloat = 0.5
     var minSwingToCheckForDiscontinuity: CGFloat = 10
-    
-    var dataSource: GraphViewDataSource? = nil
     
     private var axesDrawer = AxesDrawer()
     
@@ -70,8 +73,8 @@ class GraphView: UIView {
         let xInGraphCoordinates = (-origin.x + xInViewCoordinates) / scale
         let yInGraphCoordinates: CGFloat
         // value assigned using the if let construct below to avoid crashing in live view on Storyboard
-        if let doubleYValue = dataSource?.yValue(for: Double(xInGraphCoordinates)) {
-            yInGraphCoordinates = CGFloat(doubleYValue)
+        if let function = functionToGraph {
+            yInGraphCoordinates = CGFloat(function(Double(xInGraphCoordinates)))
         } else {
             yInGraphCoordinates = 0.0
         }
