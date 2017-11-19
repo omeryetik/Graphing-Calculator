@@ -269,5 +269,41 @@ struct CalculatorBrain {
         }
     }
     
+    
+    //    Save and restore states
+    
+    var calculatorProgram: [Any] {
+        get {
+            var program = [Any]()
+            for item in internalProgram {
+                switch item {
+                case .aDouble(let operand):
+                    program.append(operand)
+                case .anOperation(let symbol):
+                    program.append(symbol)
+                case .aVariable(let name):
+                    program.append(name)
+                }
+            }
+            return program
+        }
+        set {
+            var program = [ProgramItem]()
+            for item in newValue {
+                if let operand = item as? Double {
+                    program.append(.aDouble(operand))
+                } else if let symbol = item as? String {
+                    if let _ = operations[symbol] {
+                        program.append(.anOperation(symbol))
+                    } else {
+                        program.append(.aVariable(symbol))
+                    }
+                }
+            }
+            internalProgram = program
+        }
+    }
+    
+    
 }
 

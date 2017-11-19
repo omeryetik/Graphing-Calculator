@@ -9,6 +9,15 @@
 import Foundation
 import UIKit
 
+let defaults = UserDefaults.standard
+
+struct Keys {
+    static let keyForOrigin = "Defaults.origin"
+    static let keyForScale = "Defaults.scale"
+    static let keyForGraphViewState = "Defaults.graphView.state"
+    static let keyForCalculatorState = "Defaults.calculator.state"
+}
+
 extension UserDefaults {
     
     //    Save the last origin of the graph to UserDefaults.

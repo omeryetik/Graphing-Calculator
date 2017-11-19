@@ -53,19 +53,21 @@ class GraphViewController: VCLLoggingViewController {
     
     
     // AÊCT2: Store scale and origin
-    private let defaults = UserDefaults.standard
-    
-    private struct Keys {
-        static let keyForOrigin = "Defaults.origin"
-        static let keyForScale = "Defaults.scale"
-        static let keyForFunction = "Defaults.function"
-    }
+
     
     private func saveDefaults() {
         // No need to cast origin and scale as Any?. When getting the values,
         // they are already returned as Any?
         defaults.setCGPoint(graphView.origin, forKey: Keys.keyForOrigin)
         defaults.set(Float(graphView.scale), forKey: Keys.keyForScale)
+//        if let graph = functionToGraph {
+//            var graph = graph
+//            let data = withUnsafePointer(to: &graph) {
+//                Data(bytes: UnsafePointer($0), count: MemoryLayout.size(ofValue: graph))
+//            }
+//            defaults.set(data, forKey: Keys.keyForFunction)
+//            
+//        }
     }
     
     private var defaultOrigin: CGPoint {

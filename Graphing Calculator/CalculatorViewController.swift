@@ -110,6 +110,7 @@ class CalculatorViewController: VCLLoggingViewController {
         } else {
             canGraph = true
         }
+        saveCalculatorState()
     }
     
     //  Corrsponds to →M button
@@ -119,18 +120,12 @@ class CalculatorViewController: VCLLoggingViewController {
         if let displayValueAsString = numberFormatter.string(from: NSNumber(value:displayValue)) {
             memory.text = "M = " + displayValueAsString
         }
-        //        if let result = brain.evaluate(using: variables).result {
-        //            displayValue = result
-        //        }
         updateResultAndUI()
     }
     
     //  Corresponds to M button
     @IBAction func getVariable() {
         brain.setOperand(variable: "M")
-        //        if let result = brain.evaluate(using: variables).result {
-        //            displayValue = result
-        //        }
         updateResultAndUI()
     }
     
@@ -199,26 +194,68 @@ class CalculatorViewController: VCLLoggingViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        print("-------")
-        print("prepareForSegue called")
-        print("-------")
-
         var destinationViewController = segue.destination
         if let navigationController = destinationViewController as? UINavigationController {
             destinationViewController = navigationController.visibleViewController ?? destinationViewController
         }
         if let graphViewController = destinationViewController as? GraphViewController {
-            graphViewController.functionToGraph = { [weak weakSelf = self]  in
-                variables["M"] = $0
-                let y = weakSelf?.brain.evaluate(using: variables).result
-                variables = [:]
-                return y!
-            }
-
-            graphViewController.graphTitle = "y = " + brain.evaluate(using: variables).description
+            prepareGraphViewController(graphViewController)
+            saveGraph()
         }
     }
     
+    private func prepareGraphViewController(_ gvc: GraphViewController) {
+        gvc.functionToGraph = { [weak weakSelf = self] in
+            (weakSelf?.brain.evaluate(using: ["M" : $0]).result)!
+        }
+        gvc.graphTitle = "y = " + brain.evaluate(using: variables).description
+        
+    }
+    
+//    Save and Restore graphView and Calculator states
+    
+    private var isInASplitView: Bool {
+        return splitViewController != nil
+    }
+    
+    private func saveGraph() {
+        defaults.set(brain.calculatorProgram, forKey: Keys.keyForGraphViewState)
+    }
+    
+    private func restoreGraph() {
+        if isInASplitView {
+            if let navigationController = splitViewController!.viewControllers[1] as? UINavigationController,
+                let graphViewController = navigationController.topViewController as? GraphViewController {
+                if let program = defaults.array(forKey: Keys.keyForGraphViewState) {
+                    brain.calculatorProgram = program
+                    prepareGraphViewController(graphViewController)
+                }
+            }
+        }
+    }
+    
+    private func saveCalculatorState() {
+        let propertiesToSave: [Any] = [brain.calculatorProgram, variables]
+        defaults.set(propertiesToSave, forKey: Keys.keyForCalculatorState)
+    }
+    
+    private func restoreCalculatorState() {
+        if let properties = defaults.array(forKey: Keys.keyForCalculatorState) {
+            brain.calculatorProgram = properties[0] as! [Any]
+            variables = properties[1] as! Dictionary<String,Double>
+            updateResultAndUI()
+        }
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        restoreGraph()
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        restoreCalculatorState()
+    }
+
 }
 
 
