@@ -13,14 +13,19 @@ class GraphViewController: VCLLoggingViewController {
     // Public API
     
     // This is the model for Graphing MVC. It is simply an x-y function
+    
     var functionToGraph: ((Double) -> Double)? {
         didSet {
             updateUI()
         }
     }
     
+    var graphTitle: String?
+
     @IBOutlet weak var graphView: GraphView! {
         didSet {
+            print("GraphView didSet is called")
+            graphView.contentMode = .redraw
             let pinchHandler = #selector(graphView.changeScale(byReactingTo:))
             let pinchRecognizer = UIPinchGestureRecognizer(target: graphView, action: pinchHandler)
             graphView.addGestureRecognizer(pinchRecognizer)
@@ -33,7 +38,7 @@ class GraphViewController: VCLLoggingViewController {
             updateUI()
         }
     }
-
+    
     // Updating the UI corresponds to setting the function to be drawn
     private func updateUI() {
         if functionToGraph == nil {
@@ -43,7 +48,45 @@ class GraphViewController: VCLLoggingViewController {
         } else {
             graphView?.functionToGraph = functionToGraph
         }
+        navigationItem.title = graphTitle
     }
+    
+    
+    // AÊCT2: Store scale and origin
+    private let defaults = UserDefaults.standard
+    
+    private struct Keys {
+        static let keyForOrigin = "Defaults.origin"
+        static let keyForScale = "Defaults.scale"
+        static let keyForFunction = "Defaults.function"
+    }
+    
+    private func saveDefaults() {
+        // No need to cast origin and scale as Any?. When getting the values,
+        // they are already returned as Any?
+        defaults.setCGPoint(graphView.origin, forKey: Keys.keyForOrigin)
+        defaults.set(Float(graphView.scale), forKey: Keys.keyForScale)
+    }
+    
+    private var defaultOrigin: CGPoint {
+        if let defaultOrigin = defaults.cgPoint(forKey: Keys.keyForOrigin) {
+            return defaultOrigin
+        } else {
+            return CGPoint(x: graphView.bounds.midX, y: graphView.bounds.midY)
+        }
+    }
+    
+    private var defaultScale: CGFloat {
+        let defaultScale = defaults.float(forKey: Keys.keyForScale)
+        if defaultScale != 0 {
+            return CGFloat(defaultScale)
+        } else {
+            return graphView.scale
+        }
+    }
+    
+    
+    //
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,12 +98,18 @@ class GraphViewController: VCLLoggingViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        // Default the origin of the graph to the center of the view. Can be adjusted by the user.
-        graphView.origin = CGPoint(x: graphView.bounds.width / 2, y: graphView.bounds.height / 2)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        graphView.origin = defaultOrigin
+        graphView.scale = defaultScale
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        saveDefaults()
+    }
+    
+    
     
 }
 

@@ -199,16 +199,23 @@ class CalculatorViewController: VCLLoggingViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        print("-------")
+        print("prepareForSegue called")
+        print("-------")
+
         var destinationViewController = segue.destination
         if let navigationController = destinationViewController as? UINavigationController {
             destinationViewController = navigationController.visibleViewController ?? destinationViewController
         }
         if let graphViewController = destinationViewController as? GraphViewController {
-            graphViewController.functionToGraph = {[weak weakSelf = self] in
+            graphViewController.functionToGraph = { [weak weakSelf = self]  in
                 variables["M"] = $0
                 let y = weakSelf?.brain.evaluate(using: variables).result
+                variables = [:]
                 return y!
             }
+
+            graphViewController.graphTitle = "y = " + brain.evaluate(using: variables).description
         }
     }
     

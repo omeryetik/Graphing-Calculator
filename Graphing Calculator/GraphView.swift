@@ -27,19 +27,34 @@ class GraphView: UIView {
     @IBInspectable
     var lineWidth: CGFloat = 2.0 { didSet { setNeedsDisplay() } }
     
-    var maxAllowedSwingScale: CGFloat = 0.5
-    var minSwingToCheckForDiscontinuity: CGFloat = 10
+    private var maxAllowedSwingScale: CGFloat = 0.5
+    private var minSwingToCheckForDiscontinuity: CGFloat = 10
     
     private var axesDrawer = AxesDrawer()
+    
+    // A3ECT4: Decrease resolution during panning and zooming to obtain a smooth performance
+    private var resolution: CGFloat {
+        if executingGesture {
+            return 0.3
+        } else {
+            return contentScaleFactor
+        }
+    }
+    //
+    private var executingGesture: Bool = false
     
     // MARK: Gesture handling functions
     
     // Pinch Gesture handler : Modifies scale
     func changeScale(byReactingTo pinchRecognizer: UIPinchGestureRecognizer) {
         switch pinchRecognizer.state {
-        case .changed, .ended:
+        case .began:
+            executingGesture = true
+        case .changed:
             scale *= pinchRecognizer.scale
             pinchRecognizer.scale = 1.0 // reset scale of the gesture to allow incremental scaling
+        case .ended:
+            executingGesture = false
         default:
             break
         }
@@ -50,11 +65,15 @@ class GraphView: UIView {
     func changeOrigin(byReactingTo gestureRecognizer: UIGestureRecognizer) {
         if let panRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
             switch panRecognizer.state {
-            case .changed, .ended:
+            case .began:
+                executingGesture = true
+            case .changed:
                 let translation = panRecognizer.translation(in: self)
                 origin.x += translation.x
                 origin.y += translation.y
                 panRecognizer.setTranslation(CGPoint(x: 0, y: 0), in: self)
+            case .ended:
+                executingGesture = false
             default:
                 break
             }
@@ -69,29 +88,39 @@ class GraphView: UIView {
         }
     }
     
-    private func pointForFunction(correspondingTo xInViewCoordinates: CGFloat) -> (inViewCoordinates: CGPoint, inGraphCoordinates: CGPoint) {
+    private func pointForFunction(correspondingTo xInViewCoordinates: CGFloat) -> (inViewCoordinates: CGPoint, inGraphCoordinates: CGPoint, isValid: Bool) {
+        var pointIsValid = false
         let xInGraphCoordinates = (-origin.x + xInViewCoordinates) / scale
         let yInGraphCoordinates: CGFloat
         // value assigned using the if let construct below to avoid crashing in live view on Storyboard
         if let function = functionToGraph {
             yInGraphCoordinates = CGFloat(function(Double(xInGraphCoordinates)))
+            if yInGraphCoordinates.isNormal || yInGraphCoordinates.isZero {
+                pointIsValid = true
+            } else {
+                pointIsValid = false
+            }
         } else {
             yInGraphCoordinates = 0.0
         }
+        
         let yInViewCoordinates = origin.y - (yInGraphCoordinates * scale)
         
         return (CGPoint(x: xInViewCoordinates, y: yInViewCoordinates),
-                CGPoint(x: xInGraphCoordinates, y: yInGraphCoordinates))
+                CGPoint(x: xInGraphCoordinates, y: yInGraphCoordinates),
+                pointIsValid)
     }
     
     private func drawGraph(in rect: CGRect) -> UIBezierPath {
-        let numberOfPixelsOnXAxis = Int(rect.width * contentScaleFactor)
-        let stepSizeInPoints = 1 / contentScaleFactor // one pixel = 1/contentScaleFactor points
+        let numberOfPixelsOnXAxis = Int(rect.width * resolution)
+        let stepSizeInPoints = 1 / resolution // one pixel = 1/contentScaleFactor points
         
         let graph = UIBezierPath()
         graph.lineWidth = lineWidth
         var lastPoint = pointForFunction(correspondingTo: 0)
-        graph.move(to: lastPoint.inViewCoordinates)
+        if lastPoint.isValid {
+            graph.move(to: lastPoint.inViewCoordinates)
+        }
         
         for pixelCount in 1...numberOfPixelsOnXAxis {
             
@@ -99,7 +128,7 @@ class GraphView: UIView {
             let nextPoint = pointForFunction(correspondingTo: xInViewCoordinates)
             
             // Ensure that y-Value for pixel is valid. Otherwise iterate to next pixel
-            guard nextPoint.inGraphCoordinates.y.isNormal || nextPoint.inGraphCoordinates.y.isZero else {
+            guard nextPoint.isValid else {
                 continue
             }
             
@@ -125,25 +154,51 @@ class GraphView: UIView {
             if discontinuity || pointIsNotVisible {
                 graph.move(to: nextPoint.inViewCoordinates)
             } else {
+                if graph.isEmpty {
+                    graph.move(to: nextPoint.inViewCoordinates)
+                }
                 graph.addLine(to: nextPoint.inViewCoordinates)
             }
             
             lastPoint = nextPoint
         }
-
+        
         return graph
     }
     
+    private var oldBounds: CGRect?
+    
+    // A3ECT3: Maintain origin of the graph w.r.t. the center of the graphing view
+    private func adjustOriginRelativeToCenter() {
+        if let lastBounds = oldBounds {
+            if lastBounds != bounds {
+                origin.x *= bounds.width / lastBounds.width
+                origin.y *= bounds.height / lastBounds.height
+            }
+        }
+    }
+    //
     
     // Only override draw() if you perform custom drawing.
     // An empty implementation adversely affects performance during animation.
     override func draw(_ rect: CGRect) {
         // Drawing code
-        let graph = drawGraph(in: rect)
-        axesDrawer.contentScaleFactor = contentScaleFactor
+        adjustOriginRelativeToCenter()
+        let graph = drawGraph(in: bounds)
+        axesDrawer.contentScaleFactor = resolution
         axesDrawer.drawAxes(in: rect, origin: origin, pointsPerUnit: scale)
         UIColor.red.set()
         graph.stroke()
+        oldBounds = bounds
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 }
